@@ -76,7 +76,7 @@ setup(
         "opencv-python==4.6.0.66",
         "diffdist==0.1",
         "nltk>=3.6.2",
-        "einops>=0.3.0",
+        "einops>=0.7.0",
         "wandb>=0.12.11",
         # "transformers==4.20.1",  # freeze transformers version for stabliity
         # there is BC breaking in omegaconf 2.2.1
