@@ -16,6 +16,7 @@ from .datasets import (
     register_all_pascal21,
     register_all_ctx459,
     register_all_coco_panoptic_annos_sem_seg_caption,
+    register_all_lars_coco_panoptic_annos_sem_seg,
 )
 
 __all__ = [
@@ -27,4 +28,5 @@ __all__ = [
     "register_all_pascal21",
     "register_all_ctx459",
     "register_all_coco_panoptic_annos_sem_seg_caption",
+    "register_all_lars_coco_panoptic_annos_sem_seg",
 ]

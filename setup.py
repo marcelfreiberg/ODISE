@@ -13,13 +13,20 @@
 import glob
 import os
 import shutil
+import sys
 from os import path
 from setuptools import find_packages, setup
 from typing import List
-import torch
 
-torch_ver = [int(x) for x in torch.__version__.split(".")[:2]]
-assert torch_ver >= [1, 8], "Requires PyTorch >= 1.8"
+# Only check torch version when actually installing, not during metadata generation
+if "egg_info" not in sys.argv and "sdist" not in sys.argv:
+    try:
+        import torch
+        torch_ver = [int(x) for x in torch.__version__.split(".")[:2]]
+        assert torch_ver >= [1, 8], "Requires PyTorch >= 1.8"
+    except ImportError:
+        # torch will be installed as a dependency
+        pass
 
 
 def get_version():

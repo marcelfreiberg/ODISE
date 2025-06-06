@@ -10,10 +10,12 @@
 
 from .register_pascal import register_all_ctx59, register_all_pascal21, register_all_ctx459
 from .register_coco_caption import register_all_coco_panoptic_annos_sem_seg_caption
+from .register_lars_coco import register_all_lars_coco_panoptic_annos_sem_seg
 
 __all__ = [
     "register_all_ctx59",
     "register_all_pascal21",
     "register_all_ctx459",
     "register_all_coco_panoptic_annos_sem_seg_caption",
+    "register_all_lars_coco_panoptic_annos_sem_seg",
 ]

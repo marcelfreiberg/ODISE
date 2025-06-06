@@ -29,6 +29,7 @@ def get_openseg_labels(dataset, prompt_engineered=False):
         "pascal_context_459",
         "pascal_voc_21",
         "lvis_1203",
+        "lars_coco",
     ]
 
     label_path = osp.join(
