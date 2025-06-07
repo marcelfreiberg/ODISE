@@ -3,7 +3,7 @@ from detectron2.config import LazyCall as L
 from detectron2.solver import WarmupParamScheduler
 from fvcore.common.param_scheduler import MultiStepParamScheduler
 
-from ..common.models.odise_with_label import model
+from ..common.models.odise_with_label_lars_coco import model
 from ..common.data.lars_coco_panoptic_semseg import dataloader
 from ..common.train import train
 from ..common.optim import AdamW as optimizer
