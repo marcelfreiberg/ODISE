@@ -26,12 +26,12 @@ _PREDEFINED_SPLITS_LARS_COCO_PANOPTIC = {
     "lars_coco_train_panoptic": (
         "panoptic_train",
         "annotations/panoptic_train.json",
-        "panoptic_semseg_train",
+        "panoptic_semseg_train_full",  # Use full semantic masks with all categories
     ),
     "lars_coco_val_panoptic": (
         "panoptic_val",
         "annotations/panoptic_val.json",
-        "panoptic_semseg_val",
+        "panoptic_semseg_val_full",  # Use full semantic masks with all categories
     ),
 }
 
@@ -165,15 +165,19 @@ def register_all_lars_coco_panoptic_annos_sem_seg(root):
         else:
             raise ValueError(f"Unknown split prefix: {prefix}")
 
-        register_lars_coco_panoptic_annos_sem_seg(
-            root,
-            prefix,
-            get_metadata(),
-            image_root,
-            os.path.join(root, panoptic_root),
-            os.path.join(root, panoptic_json),
-            os.path.join(root, semantic_root),
-        )
+        # Register both base dataset and _with_sem_seg version
+        for name_suffix in ["", "_with_sem_seg"]:
+            dataset_name = prefix + name_suffix
+            if dataset_name not in DatasetCatalog:
+                register_lars_coco_panoptic_annos_sem_seg(
+                    root,
+                    dataset_name,
+                    get_metadata(),
+                    image_root,
+                    os.path.join(root, panoptic_root),
+                    os.path.join(root, panoptic_json),
+                    os.path.join(root, semantic_root),
+                )
 
 
 def load_lars_coco_semantic_only(image_dir, sem_seg_dir, meta):
@@ -196,7 +200,7 @@ def register_lars_coco_semantic_only():
     
     for split in ["train", "val"]:
         image_dir = os.path.join(root, f"images/{split}")
-        sem_seg_dir = os.path.join(root, f"panoptic_semseg_{split}")
+        sem_seg_dir = os.path.join(root, f"panoptic_semseg_{split}_full")  # Use full semantic masks
         dataset_name = f"lars_coco_{split}_sem_seg"
         
         # Update metadata dataname for this specific dataset
