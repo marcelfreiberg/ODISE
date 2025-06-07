@@ -28,6 +28,7 @@ class ODISEHandler(PathHandler):
     URLS = {
         "Panoptic/odise_caption_coco_50e": "https://github.com/NVlabs/ODISE/releases/download/v1.0.0/odise_caption_coco_50e-853cc971.pth",  # noqa
         "Panoptic/odise_label_coco_50e": "https://github.com/NVlabs/ODISE/releases/download/v1.0.0/odise_label_coco_50e-b67d2efc.pth",  # noqa
+        "Panoptic/odise_label_lars_coco_eval": "https://github.com/NVlabs/ODISE/releases/download/v1.0.0/odise_label_coco_50e-b67d2efc.pth",  # noqa
     }
 
     def _get_supported_prefixes(self):

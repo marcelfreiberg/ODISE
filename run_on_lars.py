@@ -134,6 +134,18 @@ ODISE_TO_LARS_MAPPING = {
     10: 5,
 }
 
+# Configuration Parameters
+VOCAB = ""
+LABEL_LIST = ["LARS"]
+MODEL_CONFIG = "Panoptic/odise_label_lars_coco_eval.py"
+MODEL_WEIGHTS_PATH = "/data/mfreiberg/weights/odise/odise_label_coco_50e-b67d2efc.pth"
+VAL_IMAGES_PATH = "/data/mfreiberg/datasets/lars/val/images"
+TEST_IMAGES_PATH = "/data/mfreiberg/datasets/lars/test/images"
+VAL_OUTPUT_PATH = "output/images/val"
+TEST_OUTPUT_PATH = "output/images/test"
+RANDOM_SEED = 42
+OVERLAP_THRESHOLD = 0
+
 
 def build_demo_classes_and_metadata(vocab, label_list):
     extra_classes = []
@@ -319,23 +331,21 @@ def inference(model, vocab, label_list, aug, img_path, output_dir):
         
         return fps_stats
 
-cfg = model_zoo.get_config("Panoptic/odise_label_coco_50e.py", trained=True)
 
-cfg.model.overlap_threshold = 0
-seed_all_rng(42)
+# Model Configuration and Setup
+cfg = model_zoo.get_config(MODEL_CONFIG, trained=True)
+cfg.model.overlap_threshold = OVERLAP_THRESHOLD
+seed_all_rng(RANDOM_SEED)
 
 dataset_cfg = cfg.dataloader.test
 wrapper_cfg = cfg.dataloader.wrapper
-
 aug = instantiate(dataset_cfg.mapper).augmentations
 
 model = instantiate_odise(cfg.model)
 model.to(cfg.train.device)
-ODISECheckpointer(model).load("/data/mfreiberg/weights/odise/odise_label_coco_50e-b67d2efc.pth")
+ODISECheckpointer(model).load(MODEL_WEIGHTS_PATH)
 
-vocab = ""
-label_list = ["LARS"]
-
-inference(model, vocab, label_list, aug, "/data/mfreiberg/datasets/lars/val/images", "/data/mfreiberg/predictions/odise/val")
-
-inference(model, vocab, label_list, aug, "/data/mfreiberg/datasets/lars/test/images", "/data/mfreiberg/predictions/odise/test")
+# Run Inference
+if __name__ == "__main__":
+    inference(model, VOCAB, LABEL_LIST, aug, VAL_IMAGES_PATH, VAL_OUTPUT_PATH)
+    # inference(model, VOCAB, LABEL_LIST, aug, TEST_IMAGES_PATH, TEST_OUTPUT_PATH)
