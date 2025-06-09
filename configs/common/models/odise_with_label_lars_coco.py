@@ -3,6 +3,8 @@ from detectron2.config import LazyCall as L
 from odise.modeling.meta_arch.ldm import LdmImplicitCaptionerExtractor
 from odise.modeling.backbone.feature_extractor import FeatureExtractorBackbone
 from .mask_generator_with_label import model
+from odise.data.build import get_openseg_labels
+from detectron2.data import MetadataCatalog
 
 # Import the base model and override num_classes for LARS COCO (11 classes)
 model.sem_seg_head.num_classes = 11
@@ -23,4 +25,7 @@ model.backbone = L(FeatureExtractorBackbone)(
 )
 model.sem_seg_head.pixel_decoder.transformer_in_features = ["s3", "s4", "s5"]
 model.clip_head.alpha = 0.3
-model.clip_head.beta = 0.7 
+model.clip_head.beta = 0.7
+
+model.category_head.labels = L(get_openseg_labels)(dataset="lars_coco", prompt_engineered=False)
+model.metadata = L(MetadataCatalog.get)(name="lars_coco_train_panoptic_with_sem_seg") 
