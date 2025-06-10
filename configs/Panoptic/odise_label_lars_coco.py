@@ -26,14 +26,14 @@ dataloader.train.mapper.augmentations = [
 model.criterion.num_points = 4096  # was 12544
 
 # ---------------- Data loader ----------------
-dataloader.train.total_batch_size = 32
+dataloader.train.total_batch_size = 16
 
 # ---------------- Training schedule ----------------
 # 2606 images / 32  ⇒  82 iters per epoch  ⇒  50 epochs → 4 100 iters
-train.max_iter       = 4100
+train.max_iter       = 8150
 train.grad_clip      = 0.01
-train.checkpointer.period = 500            # save ~every 6 epochs
-train.eval_period    = 82                  # validate every epoch
+train.checkpointer.period = 1000            # save ~every 6 epochs
+train.eval_period    = 163                  # validate every epoch
 
 # Learning-rate scheduler (milestones adjusted for new max_iter)
 lr_multiplier = L(WarmupParamScheduler)(
@@ -42,12 +42,12 @@ lr_multiplier = L(WarmupParamScheduler)(
         milestones=[int(train.max_iter * 0.9), int(train.max_iter * 0.95)],  # 3663, 3866
         num_updates=train.max_iter,
     ),
-    warmup_length=1000 / train.max_iter,  # 1 k-iter warm-up (≈ 12 epochs)
+    warmup_length=250 / train.max_iter,  # 1 k-iter warm-up (≈ 12 epochs)
     warmup_factor=0.067,
 )
 
 # ---------------- Optimiser ----------------
-optimizer.lr            = 1e-4             # up from 5 e-5
+optimizer.lr            = 4e-4
 optimizer.weight_decay  = 0.05             # keep default for ViT-L
 
 # ----------------------------------------------------------
