@@ -9,8 +9,6 @@ from ..common.train import train
 from ..common.optim import AdamW as optimizer
 
 
-# ---------------- Memory-safe augmentations ----------------
-# Replace original augmentations with 768x768 crop (was 1024x1024)
 dataloader.train.mapper.augmentations = [
     T.ResizeShortestEdge(
         short_edge_length=(480, 512, 544, 576, 608, 640, 672, 704, 736, 768),
@@ -21,43 +19,28 @@ dataloader.train.mapper.augmentations = [
     T.FixedSizeCrop(crop_size=(768, 768)),  # Reduced from 1024x1024
 ]
 
-# ---------------- Criterion ----------------
+dataloader.test.local_batch_size = 1
+
 # Fewer sampled points → lower VRAM
-model.criterion.num_points = 4096  # was 12544
+model.criterion.num_points = 8192  # was 12544
 
-# ---------------- Data loader ----------------
-dataloader.train.total_batch_size = 16
+dataloader.train.total_batch_size = 8
 
-# ---------------- Training schedule ----------------
-# 2606 images / 32  ⇒  82 iters per epoch  ⇒  50 epochs → 4 100 iters
-train.max_iter       = 8150
+train.max_iter       = 6_000
 train.grad_clip      = 0.01
-train.checkpointer.period = 1000            # save ~every 6 epochs
-train.eval_period    = 163                  # validate every epoch
+train.checkpointer.period = 500
 
-# Learning-rate scheduler (milestones adjusted for new max_iter)
 lr_multiplier = L(WarmupParamScheduler)(
     scheduler=L(MultiStepParamScheduler)(
         values=[1.0, 0.1, 0.01],
         milestones=[int(train.max_iter * 0.9), int(train.max_iter * 0.95)],  # 3663, 3866
         num_updates=train.max_iter,
     ),
-    warmup_length=250 / train.max_iter,  # 1 k-iter warm-up (≈ 12 epochs)
+    warmup_length=250 / train.max_iter,  # 250 iterations (≈ 0.75 epoch)
     warmup_factor=0.067,
 )
 
-# ---------------- Optimiser ----------------
-optimizer.lr            = 4e-4
-optimizer.weight_decay  = 0.05             # keep default for ViT-L
+train.auto_scale_lr = dict(enabled=False)
 
-# ----------------------------------------------------------
-# TEST / VALIDATION MAPPER – keep memory identical to training
-# ----------------------------------------------------------
-# remove the FixedSizeCrop for test-time (centre crop hurts metrics)  
-# dataloader.test.mapper.augmentations = [
-#     T.ResizeShortestEdge(
-#         short_edge_length=768,
-#         max_size=1333,
-#         sample_style="choice",
-#     )
-# ]
+optimizer.lr = 1e-4
+optimizer.weight_decay = 0.05
