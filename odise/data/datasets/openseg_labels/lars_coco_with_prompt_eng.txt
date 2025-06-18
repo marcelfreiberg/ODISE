@@ -1,4 +1,4 @@
-0:static obstacle, forest, mountain, cityscape, terrain, landscape
+0:static obstacle, background, structure, trees, forest, vegetation, buildings, urban structures, architecture, embankment
 1:water, ocean, lake, sea
 2:sky, clouds, sky, atmosphere
 3:boat/ship, vessel, watercraft, ship, boat
