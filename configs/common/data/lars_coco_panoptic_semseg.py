@@ -74,6 +74,6 @@ dataloader.evaluator = [
 ]
 
 dataloader.wrapper = L(OpenPanopticInference)(
-    labels=L(get_openseg_labels)(dataset="lars_coco", prompt_engineered=False),
+    labels=L(get_openseg_labels)(dataset="lars_coco", prompt_engineered=True),
     metadata=L(MetadataCatalog.get)(name="${...test.dataset.names}"),
 )

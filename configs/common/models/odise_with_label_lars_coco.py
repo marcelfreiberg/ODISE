@@ -27,5 +27,5 @@ model.sem_seg_head.pixel_decoder.transformer_in_features = ["s3", "s4", "s5"]
 model.clip_head.alpha = 0.3
 model.clip_head.beta = 0.7
 
-model.category_head.labels = L(get_openseg_labels)(dataset="lars_coco", prompt_engineered=False)
-model.metadata = L(MetadataCatalog.get)(name="lars_coco_train_panoptic_with_sem_seg") 
+model.category_head.labels = L(get_openseg_labels)(dataset="lars_coco", prompt_engineered=True)
+model.metadata = L(MetadataCatalog.get)(name="lars_coco_train_panoptic_with_sem_seg")

@@ -26,98 +26,37 @@ setup_logger()
 logger = setup_logger(name="odise")
 
 LARS_STUFF_CLASSES = [
-    ["Static Obstacle"],
-    ["Water"],
-    ["Sky"],
-]
-
-LARS_STUFF_CLASSES_EXTENDED = [
-    [
-        "Static Obstacle",
-        "Fixed Object",
-        "Immovable Object",
-        "Barrier",
-        "Structure",
-        "Terrain",
-        "Ground",
-        "Land",
-        "Forest",
-        "Trees",
-        "Vegetation",
-        "Plants",
-        "Grass",
-        "Bush",
-        "Foliage",
-        "Beach",
-        "Shore",
-        "Coast",
-        "Sand",
-        "Rocks",
-        "Cliff",
-        "Stone",
-        "Boulder",
-        "Background",
-        "Environment",
-        "Surroundings",
-        "Landscape",
-        "Dock",
-        "Pier",
-        "Jetty",
-        "Building",
-        "Construction",
-    ],
-    [
-        "Water",
-        "Sea",
-        "Ocean",
-        "Lake",
-        "River",
-        "Pond",
-        "Fluid",
-        "Aquatic surface",
-        "Waterway",
-        "Stream",
-        "Waves",
-        "Liquid",
-    ],
-    [
-        "Sky",
-        "Clouds",
-        "Atmosphere",
-        "Heavens",
-        "Air",
-        "Horizon",
-        "Celestial",
-        "Firmament",
-    ],
-]
-
-LARS_STUFF_COLORS = [
-    [247, 195, 37],
-    [41, 167, 224],
-    [90, 75, 164],
+    ["static obstacle", "background", "structure", "trees", "forest", "vegetation", "Buildings", "Urban Structures", "architecture", "embankment"],
+    ["water", "ocean", "lake", "sea"],
+    ["sky", "clouds", "sky", "atmosphere"],
 ]
 
 LARS_THING_CLASSES = [
-    ["Boat/ship"],
-    ["Row boats"],
-    ["Paddle board"],
-    ["Buoy"],
-    ["Swimmer"],
-    ["Animal"],
-    ["Float"],
-    ["Other"],
+    ["boat/ship", "vessel", "watercraft", "ship", "boat"],
+    ["row boats", "dinghy", "skiff", "rowboat", "paddle boat"],
+    ["paddle board", "sup", "board", "surfboard", "stand-up paddle"],
+    ["buoy", "beacon", "marker", "float", "mooring"],
+    ["swimmer", "person swimming", "human", "diver", "swimmer"],
+    ["animal", "bird", "seal", "mammal", "animal"],
+    ["float", "inflatable", "raft", "device", "float"],
+    ["other"],
+]
+
+LARS_STUFF_COLORS = [
+    [247, 195, 37],  # static obstacle
+    [41, 167, 224],  # water
+    [90, 75, 164],   # sky
 ]
 
 LARS_THING_COLORS = [
-    [255, 87, 51],  # Boat/ship - bright orange-red
-    [50, 205, 50],  # Row boats - lime green
-    [255, 0, 255],  # Paddle board - magenta
-    [255, 215, 0],  # Buoy - gold
-    [0, 128, 128],  # Swimmer - teal
-    [139, 69, 19],  # Animal - saddle brown
-    [220, 20, 60],  # Float - crimson
-    [169, 169, 169],  # Other - dark gray
+    [255, 87, 51],   # boat/ship - bright orange-red
+    [50, 205, 50],   # row boats - lime green
+    [255, 0, 255],   # paddle board - magenta
+    [255, 215, 0],   # buoy - gold
+    [0, 128, 128],   # swimmer - teal
+    [139, 69, 19],   # animal - saddle brown
+    [220, 20, 60],   # float - crimson
+    [169, 169, 169], # other - dark gray
 ]
 
 ODISE_TO_LARS_MAPPING = {
@@ -135,63 +74,40 @@ ODISE_TO_LARS_MAPPING = {
 }
 
 # Configuration Parameters
-VOCAB = ""
-LABEL_LIST = ["LARS"]
-MODEL_CONFIG = "Panoptic/odise_label_lars_coco_eval.py"
+MODEL_CONFIG = "Panoptic/odise_label_lars_coco.py"
 MODEL_WEIGHTS_PATH = "/data/mfreiberg/weights/odise/odise_label_coco_50e-b67d2efc.pth"
 VAL_IMAGES_PATH = "/data/mfreiberg/datasets/lars/val/images"
 TEST_IMAGES_PATH = "/data/mfreiberg/datasets/lars/test/images"
 VAL_OUTPUT_PATH = "output/images/val"
 TEST_OUTPUT_PATH = "output/images/test"
 RANDOM_SEED = 42
-OVERLAP_THRESHOLD = 0
 
 
-def build_demo_classes_and_metadata(vocab, label_list):
-    extra_classes = []
-
-    if vocab:
-        for words in vocab.split(";"):
-            extra_classes.append([word.strip() for word in words.split(",")])
-    extra_colors = [
-        random_color(rgb=True, maximum=1) for _ in range(len(extra_classes))
-    ]
-
-    demo_thing_classes = extra_classes
-    demo_stuff_classes = []
-    demo_thing_colors = extra_colors
-    demo_stuff_colors = []
-
-    if "LARS" in label_list:
-        demo_thing_classes += LARS_THING_CLASSES
-        demo_stuff_classes += LARS_STUFF_CLASSES
-        demo_thing_colors += LARS_THING_COLORS
-        demo_stuff_colors += LARS_STUFF_COLORS
-    if "LARS_EXTENDED" in label_list:
-        demo_thing_classes += LARS_THING_CLASSES
-        demo_stuff_classes += LARS_STUFF_CLASSES_EXTENDED
-        demo_thing_colors += LARS_THING_COLORS
-        demo_stuff_colors += LARS_STUFF_COLORS
-
+def build_demo_classes_and_metadata():
+    # --- reset / create fresh metadata entry ---
     MetadataCatalog.pop("odise_demo_metadata", None)
-    demo_metadata = MetadataCatalog.get("odise_demo_metadata")
-    demo_metadata.thing_classes = [c[0] for c in demo_thing_classes]
-    demo_metadata.stuff_classes = [
-        *demo_metadata.thing_classes,
-        *[c[0] for c in demo_stuff_classes],
-    ]
-    demo_metadata.thing_colors = demo_thing_colors
-    demo_metadata.stuff_colors = demo_thing_colors + demo_stuff_colors
-    demo_metadata.stuff_dataset_id_to_contiguous_id = {
-        idx: idx for idx in range(len(demo_metadata.stuff_classes))
+    meta = MetadataCatalog.get("odise_demo_metadata")
+
+    # --- classes & colours ---
+    thing_classes = [group[0] for group in LARS_THING_CLASSES]
+    stuff_classes = thing_classes + [group[0] for group in LARS_STUFF_CLASSES]
+
+    meta.thing_classes = thing_classes
+    meta.stuff_classes = stuff_classes
+    meta.thing_colors = LARS_THING_COLORS
+    meta.stuff_colors = LARS_THING_COLORS + LARS_STUFF_COLORS
+
+    # --- contiguous-id maps (id → id) ---
+    meta.thing_dataset_id_to_contiguous_id = {
+        i: i for i in range(len(thing_classes))
     }
-    demo_metadata.thing_dataset_id_to_contiguous_id = {
-        idx: idx for idx in range(len(demo_metadata.thing_classes))
+    meta.stuff_dataset_id_to_contiguous_id = {
+        i: i for i in range(len(stuff_classes))
     }
 
-    demo_classes = demo_thing_classes + demo_stuff_classes
-
-    return demo_classes, demo_metadata
+    # Return the full nested alias lists as before, plus metadata handle
+    all_classes = LARS_THING_CLASSES + LARS_STUFF_CLASSES
+    return all_classes, meta
 
 
 class VisualizationDemo(object):
@@ -277,11 +193,11 @@ class VisualizationDemo(object):
         return Image.fromarray(np.uint8(panoptic_mask))
 
 
-def inference(model, vocab, label_list, aug, img_path, output_dir):
+def inference(model, aug, img_path, output_dir):
     fps_values = []
     image_names = []
 
-    demo_classes, demo_metadata = build_demo_classes_and_metadata(vocab, label_list)
+    demo_classes, demo_metadata = build_demo_classes_and_metadata()
     with ExitStack() as stack:
         inference_model = OpenPanopticInference(
             model=model,
@@ -334,7 +250,6 @@ def inference(model, vocab, label_list, aug, img_path, output_dir):
 
 # Model Configuration and Setup
 cfg = model_zoo.get_config(MODEL_CONFIG, trained=True)
-cfg.model.overlap_threshold = OVERLAP_THRESHOLD
 seed_all_rng(RANDOM_SEED)
 
 dataset_cfg = cfg.dataloader.test
@@ -347,5 +262,5 @@ ODISECheckpointer(model).load(MODEL_WEIGHTS_PATH)
 
 # Run Inference
 if __name__ == "__main__":
-    inference(model, VOCAB, LABEL_LIST, aug, VAL_IMAGES_PATH, VAL_OUTPUT_PATH)
-    # inference(model, VOCAB, LABEL_LIST, aug, TEST_IMAGES_PATH, TEST_OUTPUT_PATH)
+    inference(model, aug, VAL_IMAGES_PATH, VAL_OUTPUT_PATH)
+    # inference(model, aug, TEST_IMAGES_PATH, TEST_OUTPUT_PATH)

@@ -44,3 +44,7 @@ train.auto_scale_lr = dict(enabled=False)
 
 optimizer.lr = 1e-4
 optimizer.weight_decay = 0.05
+
+# Override prompts for water domain shift testing
+# model.category_head.prompt = "maritime"
+# model.clip_head.prompt = "maritime"

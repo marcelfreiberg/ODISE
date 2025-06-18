@@ -36,7 +36,7 @@ class _ModelZooUrls(object):
     CONFIG_PATH_TO_URL_SUFFIX = {
         "Panoptic/odise_caption_coco_50e": "odise_caption_coco_50e-853cc971.pth",
         "Panoptic/odise_label_coco_50e": "odise_label_coco_50e-b67d2efc.pth",
-        "Panoptic/odise_label_lars_coco_eval": "odise_label_coco_50e-b67d2efc.pth",
+        "Panoptic/odise_label_lars_coco": "odise_label_coco_50e-b67d2efc.pth",
     }
 
     @staticmethod

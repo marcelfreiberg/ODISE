@@ -56,7 +56,7 @@ def prompt_labels(labels, prompt):
     if prompt is None:
         return labels
     labels = copy.deepcopy(labels)
-    assert prompt in ["a", "photo", "scene"]
+    assert prompt in ["a", "photo", "scene", "water", "maritime"]
     if prompt == "a":
         for i in range(len(labels)):
             labels[i] = [f"a {l}" for l in labels[i]]
@@ -66,6 +66,12 @@ def prompt_labels(labels, prompt):
     elif prompt == "scene":
         for i in range(len(labels)):
             labels[i] = [f"a photo of a {l} in the scene." for l in labels[i]]
+    elif prompt == "water":
+        for i in range(len(labels)):
+            labels[i] = [f"an image of a {l} on the water" for l in labels[i]]
+    elif prompt == "maritime":
+        for i in range(len(labels)):
+            labels[i] = [f"an electro-optical maritime scene containing a {l}" for l in labels[i]]
     else:
         raise NotImplementedError
 
